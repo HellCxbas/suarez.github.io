@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paisaje con Flores y Mariposas Animadas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #87CEFA; /* Color de fondo celeste */
+        }
+
+        .sol {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background-color: yellow;
+            border-radius: 50%;
+            top: 50px;
+            left: 50%;
+            margin-left: -75px;
+            box-shadow: 0 0 50px rgba(255, 255, 0, 0.7);
+        }
+
+        .colina {
+            position: absolute;
+            width: 1000px;
+            height: 300px;
+            background-color: #228B22;
+            border-radius: 50%;
+            bottom: 0;
+            left: 50%;
+            margin-left: -500px;
+        }
+
+        .colina2 {
+            position: absolute;
+            width: 800px;
+            height: 200px;
+            background-color: #2E8B57;
+            border-radius: 50%;
+            bottom: 0;
+            left: 50%;
+            margin-left: -400px;
+        }
+
+        /* Posición centrada para flores */
+        #florCanvas {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Botón para la propuesta */
+        #propuestaBtn {
+            position: absolute;
+            top: 300px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: pink;
+            border: 3px solid #FF69B4;
+            color: black;
+            font-size: 18px;
+            font-family: 'Cursive';
+            cursor: pointer;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+
+        /* Estilo del mensaje flotante */
+        #mensajePropuesta {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 5px solid #FF69B4;
+            font-size: 40px;
+            font-family: 'Cursive';
+            color: #FF69B4;
+            border-radius: 15px;
+            display: none; /* Oculto por defecto */
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        /* Animación de aparición del cartel */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -55%);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* Botones para "Sí" y "No" */
+        .opciones {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .opciones button {
+            padding: 10px 20px;
+            margin: 0 15px;
+            font-size: 20px;
+            font-family: 'Cursive';
+            cursor: pointer;
+            border-radius: 10px;
+            border: 2px solid #FF69B4;
+            background-color: pink;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .opciones button:hover {
+            transform: scale(1.1);
+            background-color: #FFB6C1;
+        }
+
+        /* Mensaje adicional para el "Sí" */
+        #mensajeSi {
+            position: absolute;
+            top: 50%; /* Justo debajo del mensaje inicial */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            font-family: 'Cursive';
+            color: #FF69B4;
+            text-align: center;
+            display: none;
+        }
+
+        /* Mensaje de advertencia para el "No" */
+        #mensajeAdvertencia {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 3px solid red;
+            color: red;
+            font-size: 30px;
+            font-family: 'Cursive';
+            border-radius: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="sol"></div>
+    <div class="colina"></div>
+    <div class="colina2"></div>
+
+    <!-- Canvas para flores -->
+    <canvas id="florCanvas" width="800" height="400"></canvas>
+
+    <!-- Botón para mostrar la propuesta -->
+    <button id="propuestaBtn">¿Quieres ser mi novia?</button>
+
+    <!-- Mensaje flotante para la propuesta -->
+    <div id="mensajePropuesta">
+        ¿Quieres ser mi novia?
+        <div class="opciones">
+            <button id="siBtn">Chi</button>
+            <button id="noBtn">Ño</button>
+        </div>
+    </div>
+
+    <!-- Mensaje resultado para el "Sí" -->
+    <div id="mensajeSi">La dramas💖</div>
+
+    <!-- Mensaje de advertencia para el "No" -->
+    <div id="mensajeAdvertencia">
+        ¿Estás segura?
+        <div class="opciones">
+            <button id="advertenciaSiBtn">No</button>
+            <button id="advertenciaNoBtn">Sí</button>
+        </div>
+    </div>
+
+    <!-- Script para dibujar flores -->
+    <script>
+        const canvas = document.getElementById("florCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let anguloCapa1 = 0;
+        let anguloCapa2 = 0;
+
+        function petalo(x, y, radio, angulo, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.ellipse(x, y, radio, radio * 0.6, angulo * Math.PI / 180, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function tallo(x, y, largo) {
+            ctx.strokeStyle = "green";
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y + largo);
+            ctx.stroke();
+        }
+
+        function centroFlor(x, y, radio) {
+            ctx.fillStyle = "brown";
+            ctx.beginPath();
+            ctx.arc(x, y, radio, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function hojaPuntiaguda(x, y, ancho, largo, angulo, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angulo * Math.PI / 180);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(ancho / 2, largo / 2);
+            ctx.lineTo(-5, largo);
+            ctx.lineTo(-ancho / 1, largo / 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function dibujarFlor(x, y) {
+            tallo(x, y, 100);
+
+            for (let i = 0; i < 6; i++) {
+                petalo(x, y, 40, anguloCapa1 + i * 60, "yellow");
+            }
+
+            for (let i = 0; i < 6; i++) {
+                petalo(x, y, 30, anguloCapa2 + i * 60 + 30, "gold");
+            }
+
+            centroFlor(x, y, 15);
+            hojaPuntiaguda(x + 20, y + 50, 10, 30, 37, "green");
+        }
+
+        function dibujarPaisajeConFlores() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujar 8 flores en posiciones distribuidas
+            dibujarFlor(50, 250);
+            dibujarFlor(150, 220);
+            dibujarFlor(250, 270);
+            dibujarFlor(350, 230);
+            dibujarFlor(450, 290);
+            dibujarFlor(550, 250);
+            dibujarFlor(650, 200);
+            dibujarFlor(750, 260);
+        }
+
+        function animarFlor() {
+            anguloCapa1 += 0.5; // Velocidad de rotación
+            anguloCapa2 -= 0.5; // Velocidad de rotación inversa
+            dibujarPaisajeConFlores();
+            requestAnimationFrame(animarFlor);
+        }
+
+        animarFlor();
+    </script>
+
+    <script>
+        const propuestaBtn = document.getElementById("propuestaBtn");
+        const mensajePropuesta = document.getElementById("mensajePropuesta");
+        const siBtn = document.getElementById("siBtn");
+        const noBtn = document.getElementById("noBtn");
+        const mensajeSi = document.getElementById("mensajeSi");
+        const mensajeAdvertencia = document.getElementById("mensajeAdvertencia");
+        const advertenciaSiBtn = document.getElementById("advertenciaSiBtn");
+        const advertenciaNoBtn = document.getElementById("advertenciaNoBtn");
+
+        propuestaBtn.addEventListener("click", function() {
+            mensajePropuesta.style.display = "block";
+            mensajePropuesta.style.opacity = "1";
+        });
+
+        siBtn.addEventListener("click", function() {
+            // Ocultar todos los mensajes
+            mensajePropuesta.style.display = "none";
+            mensajeSi.style.display = "block"; // Mostrar mensaje para "Sí"
+            alert("Mas te vale | Mentira bb te adoro💖"); // Mensaje de alerta para "Sí"
+        });
+
+        noBtn.addEventListener("click", function() {
+            mensajeAdvertencia.style.display = "block";
+            mensajeAdvertencia.style.opacity = "1";
+            mensajePropuesta.style.display = "none"; // Ocultar el mensaje de propuesta
+        });
+
+        advertenciaSiBtn.addEventListener("click", function() {
+            alert("Ayy weno C: | Igual luego de esto te va a correr un virus potente por majadera"); // Mensaje de advertencia
+            // Ocultar todos los mensajes de advertencia
+            mensajeAdvertencia.style.display = "none";
+        });
+
+        advertenciaNoBtn.addEventListener("click", function() {
+            alert("A, weno:C Ahora cuando cierres esto te va a corres un virus potente"); // Mensaje de respuesta positiva
+            // Ocultar todos los mensajes de advertencia
+            mensajeAdvertencia.style.display = "none";
+        });
+    </script>
+
+<script>
+    function generarColorPastel() {
+        const rojo = Math.floor(Math.random() * 128 + 127); // Colores entre 127 y 255
+        const verde = Math.floor(Math.random() * 128 + 127);
+        const azul = Math.floor(Math.random() * 128 + 127);
+        return `rgb(${rojo}, ${verde}, ${azul})`;
+    }
+
+    const mariposas = Array.from({ length: 8 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * (200 - 150) + 150, // Mantener mariposas cerca de las flores
+        color: generarColorPastel(), // Color pastel aleatorio
+        aleteo: 0,
+        velocidadX: (Math.random() - 0.5) * 2, // Velocidad horizontal aleatoria
+        velocidadY: (Math.random() - 0.5) * 1 // Velocidad vertical aleatoria
+    }));
+
+    function dibujarMariposa(x, y, color, aleteo) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(1, Math.sin(aleteo) * 0.3 + 1); // Aleteo
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(-10, 0, 10, 0, Math.PI * 2); // Ala izquierda
+        ctx.arc(10, 0, 10, 0, Math.PI * 2); // Ala derecha
+        ctx.fill();
+        ctx.restore();
+
+        ctx.fillStyle = "black";
+        ctx.fillRect(x - 2, y - 5, 4, 10); // Cuerpo
+    }
+
+    function moverMariposas() {
+        mariposas.forEach(mariposa => {
+            mariposa.aleteo += 0.1; // Aleteo
+
+            // Actualizar posición con velocidades aleatorias
+            mariposa.x += mariposa.velocidadX; 
+            mariposa.y += mariposa.velocidadY; 
+
+            // Cambiar dirección si alcanzan los bordes
+            if (mariposa.x < 0 || mariposa.x > canvas.width) {
+                mariposa.velocidadX *= -1; // Cambiar dirección horizontal
+            }
+            if (mariposa.y < 150 || mariposa.y > 200) {
+                mariposa.velocidadY *= -1; // Cambiar dirección vertical
+            }
+
+            dibujarMariposa(mariposa.x, mariposa.y, mariposa.color, mariposa.aleteo);
+        });
+    }
+
+    function animarMariposas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpiar el canvas para evitar trazos
+        dibujarPaisajeConFlores(); // Asegúrate de llamar a tu función de flores aquí
+        moverMariposas();
+        requestAnimationFrame(animarMariposas);
+    }
+
+    animarMariposas();
+</script>
+
+</body>
+</html>
